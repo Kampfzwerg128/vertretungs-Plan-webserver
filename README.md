@@ -4,7 +4,7 @@
 start befhel für den Server python3 Server.py
 
 
-verwendet: Ubuntu
+verwendet: Ubuntu auf einem Raspi VM noch nicht getestet
 python 
 pip
 
