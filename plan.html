@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vertretungsplan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    input, button {
+      margin: 10px 0;
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    a {
+      margin-right: 5px;
+      text-decoration: none;
+      color: blue;
+      cursor: pointer;
+    }
+    .form-container {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Vertretungsplan</h2>
+
+  <!-- Formular zum Hinzufügen eines neuen Eintrags -->
+  <div id="addFormDiv" class="form-container">
+    <h3>Neuen Eintrag hinzufügen</h3>
+    <form action="/add" method="post" id="addForm">
+      <input type="date" name="datum" required>
+      <input type="text" name="klasse" placeholder="Klasse" required>
+      <input type="text" name="fach" placeholder="Fach" required>
+      <input type="text" name="lehrer" placeholder="Aktueller Lehrer" required>
+      <input type="text" name="raum" placeholder="Raum" required>
+      <input type="text" name="urspruenglicher_lehrer" placeholder="Ursprünglicher Lehrer">
+      <input type="text" name="kommentare" placeholder="Kommentare">
+      <button type="submit">Eintrag hinzufügen</button>
+    </form>
+  </div>
+
+  <!-- Formular zum Bearbeiten eines bestehenden Eintrags (initial versteckt) -->
+  <div id="editFormDiv" class="form-container" style="display: none;">
+    <h3>Eintrag bearbeiten</h3>
+    <form method="post" id="editForm">
+      <input type="date" name="datum" id="editDatum" required>
+      <input type="text" name="klasse" id="editKlasse" placeholder="Klasse" required>
+      <input type="text" name="fach" id="editFach" placeholder="Fach" required>
+      <input type="text" name="lehrer" id="editLehrer" placeholder="Aktueller Lehrer" required>
+      <input type="text" name="raum" id="editRaum" placeholder="Raum" required>
+      <input type="text" name="urspruenglicher_lehrer" id="editUrspruenglicher" placeholder="Ursprünglicher Lehrer">
+      <input type="text" name="kommentare" id="editKommentare" placeholder="Kommentare">
+      <button type="submit">Änderungen speichern</button>
+      <button type="button" onclick="cancelEdit()">Abbrechen</button>
+    </form>
+  </div>
+
+  <h3>Aktuelle Vertretungen:</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Datum</th>
+        <th>Klasse</th>
+        <th>Fach</th>
+        <th>Aktueller Lehrer</th>
+        <th>Raum</th>
+        <th>Ursprünglicher Lehrer</th>
+        <th>Kommentare</th>
+        <th>Aktionen</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in vertretungen %}
+      <tr>
+        <td>{{ v.datum }}</td>
+        <td>{{ v.klasse }}</td>
+        <td>{{ v.fach }}</td>
+        <td>{{ v.lehrer }}</td>
+        <td>{{ v.raum }}</td>
+        <td>{{ v.urspruenglicher_lehrer }}</td>
+        <td>{{ v.kommentare }}</td>
+        <td>
+          <a onclick="editEntry('{{ v.id }}', '{{ v.datum }}', '{{ v.klasse }}', '{{ v.fach }}', '{{ v.lehrer }}', '{{ v.raum }}', '{{ v.urspruenglicher_lehrer }}', '{{ v.kommentare }}')">Bearbeiten</a>
+          <a href="/delete/{{ v.id }}">Löschen</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <script>
+    // Zeigt das Bearbeitungsformular und füllt es mit den vorhandenen Daten
+    function editEntry(id, datum, klasse, fach, lehrer, raum, urspruenglicher, kommentare) {
+      document.getElementById('addFormDiv').style.display = 'none';
+      document.getElementById('editFormDiv').style.display = 'block';
+      document.getElementById('editDatum').value = datum;
+      document.getElementById('editKlasse').value = klasse;
+      document.getElementById('editFach').value = fach;
+      document.getElementById('editLehrer').value = lehrer;
+      document.getElementById('editRaum').value = raum;
+      document.getElementById('editUrspruenglicher').value = urspruenglicher;
+      document.getElementById('editKommentare').value = kommentare;
+      document.getElementById('editForm').action = '/update/' + id;
+    }
+
+    // Bricht den Bearbeitungsmodus ab und zeigt das Hinzufügen-Formular wieder an
+    function cancelEdit() {
+      document.getElementById('editFormDiv').style.display = 'none';
+      document.getElementById('addFormDiv').style.display = 'block';
+    }
+  </script>
+
+</body>
+</html>
